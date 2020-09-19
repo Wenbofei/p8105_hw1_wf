@@ -1,30 +1,66 @@
 ---
-title: "p8105_hw1_wf2270"
-author: "Wenbo Fei"
+title: "P8105 HW1"
+author: "Wenbo Fei(wf2270)"
 date: "9/19/2020"
 output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+#Problem 1
+Create a data frame with the specified elements.
+```{r create_df}
+prob1_df1 = tibble(
+  num1 = rnorm(10),
+  logi1 = num1 > 0,
+  char1 = c("one","two","three","four","five","six","eight","seven","nine","ten"), 
+  fac1 = factor(sample(c("A","B","C"), 10, replace = TRUE))
+)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+Take the mean of each variable in my data frame.
+```{r mean_pull_var}
+mean(pull(prob1_df1, num1))
+mean(pull(prob1_df1, logi1))
+mean(pull(prob1_df1, char1))
+mean(pull(prob1_df1, fac1))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+I can take the mean of numbers and logical but not character or factor. 
+
+```{r try_numeric, results='hide'}
+as.numeric(pull(prob1_df1, num1))
+as.numeric(pull(prob1_df1, logi1))
+as.numeric(pull(prob1_df1, char1))
+as.numeric(pull(prob1_df1, fac1))
+```
+
+We got NA when to apply as.numeric to charactor variables. Logical variables will be transformed into 0 or 1 so it can be taken the mean. Factor variables will be transformed into levels if \'level=T\' when we create the factor variables, but we can't do math calculation on factors.
+
+Second code trunck
+```{r numeric_multiply}
+as.numeric(pull(prob1_df1, logi1)) * pull(prob1_df1, num1)
+as.factor(pull(prob1_df1, logi1)) * pull(prob1_df1, num1)
+as.numeric(as.factor(pull(prob1_df1, logi1))) * pull(prob1_df1, num1)
+```
+
+#Problem 2
+```{r data_describ}
+data("penguins", package = "palmerpenguins")
+#the data in this dataset, including names / values of important variables
+head(penguins)
+summary(penguins)
+#the size of the dataset 
+nrow(penguins)
+ncol(penguins)
+#mean flipper length
+mean(pull(penguins,flipper_length_mm), na.rm = T)
+```
+
+```{r plot}
+ggplot(penguins, aes(x = bill_length_mm, y = flipper_length_mm, color = species)) + geom_point()
+ggsave("scatter_plot.pdf", height = 4, width = 6)
+```
